@@ -39,8 +39,7 @@ jobs:
         run: |
           docker build \
             --build-arg ENV=${{ env.ENV }} \
-            -t ghcr.io/biblegateway/${{ github.repository }}:${{ env.TAG }} \
-            --file modernization/docker/bg/Dockerfile .
+            -t ghcr.io/biblegateway/${{ github.repository }}:${{ env.TAG }}
       
       - name: Push Docker Image to GHCR
         run: |
