@@ -1,0 +1,23 @@
+name: Build and Push Docker Image
+#while merging to main/master switch to workflow_dispatch
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate Docker
+        run: |
+          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "NoonDev002" --password-stdin
+           
+      
+      - name: Build Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/kaushal/appdemo:latest
