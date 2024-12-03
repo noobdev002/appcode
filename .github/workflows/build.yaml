@@ -26,7 +26,7 @@ jobs:
 
       - name: Authenticate Docker
         run: |
-          echo "${{ secrets.Docker_Build }}" | docker login ghcr.io -u "NoonDev002" --password-stdin
+          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "NoonDev002" --password-stdin
            
   
       - name: Set up environment variables
