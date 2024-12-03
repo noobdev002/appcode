@@ -28,9 +28,6 @@ jobs:
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "NoonDev002" --password-stdin
            
-      - name: Authenticate Docker
-        run: |
-          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "NoonDev002" --password-stdin
   
       - name: Set up environment variables
         id: vars
