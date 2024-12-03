@@ -2,43 +2,22 @@ name: Build and Push Docker Image
 #while merging to main/master switch to workflow_dispatch
 on:
   workflow_dispatch:
-    inputs:
-      env:
-        description: "Environment (e.g., dev, staging, prod)"
-        required: true
-        default: "dev"
-      tag:
-        description: "Docker image tag"
-        required: true
-        default: "latest"
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref}}
+      - uses: actions/checkout@v4
 
       - name: Authenticate Docker
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "NoonDev002" --password-stdin
            
-  
-      - name: Set up environment variables
-        id: vars
-        run: |
-          echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
-          echo "ENV=${{ github.event.inputs.env }}" >> $GITHUB_ENV
       
       - name: Build Docker Image
-        run: |
-          docker build \
-            --build-arg ENV=${{ env.ENV }} \
-            -t ghcr.io/kaushal/${{ github.repository }}:${{ env.TAG }} \
-            --file ./Dockerfile .
-      
-      - name: Push Docker Image to GHCR
-        run: |
-          docker push ghcr.io/kaushal/${{ github.repository }}:${{ env.TAG }}
+        uses: docker/build-puh-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/kaushal/appdemo:latest
