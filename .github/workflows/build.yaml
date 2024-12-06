@@ -2,6 +2,11 @@ name: Build and Push Docker Image
 #while merging to main/master switch to workflow_dispatch
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "docker tag"
+        required: true
+        default: "latest"
 
 jobs:
   build-and-push:
@@ -12,7 +17,17 @@ jobs:
       - name: Authenticate Docker
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "NoonDev002" --password-stdin
-           
+      - name: Check if Tag Exists (Improved Logic)
+          id: check_tag
+          env:
+            GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}  # Use GHCR_TOKEN for clarity
+       run: |
+          # Improved logic: Use a dedicated tool for efficiency
+          TAG_EXISTS=$(ghcr auth status --token $GHCR_TOKEN | grep "${{ github.event.inputs.tag }}")
+          if [[ -n "$TAG_EXISTS" ]]; then
+            echo "Tag ${{ github.event.inputs.tag }} already exists!"
+            exit 1
+          fi
       
       - name: Build Docker Image
         uses: docker/build-push-action@v4
