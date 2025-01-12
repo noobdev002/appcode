@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: pr-generator-main-branch
+  namespace: argocd
+spec:
+  generators:
+    - pullRequest:
+        provider:
+          github:
+            owner: noobdev002 # Replace with your GitHub username or organization
+            repo: appcode  # Replace with your repository name
+            tokenRef:
+              secretName: GH_TOKEN
+              key: token
+        targetBranches:
+          - main # Trigger only for PRs targeting the main branch
+        events:
+          - opened
+  template:
+    metadata:
+      name: '{{branch}}-pr-app'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/noobdev002/appcode.git'
+        targetRevision: '{{branch}}'
+        helm:
+          path: helm # Path to your Helm chart directory
+          values: values.yaml
+        # Additional Helm-specific configurations
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{branch}}-namespace'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
